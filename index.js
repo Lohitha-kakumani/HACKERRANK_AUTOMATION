@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer')
+const codeObj = require('./codes')
 
 //hackerrank link
 
@@ -46,8 +47,10 @@ browserOpen.then(function(browserObj){
     return allChallengesPromise;
 }).then(function(questionArray){
     console.log('number of questions' , questionArray.length)
-    
+     let questionWillBeSolved = questionSolver(page,questionArray[0],codeObj.answers[0])
+     return questionWillBeSolved
 })
+
 
 
 
@@ -62,6 +65,55 @@ function waitAndClick(selector,cPage){
             resolve()
         }).catch(function(err){
             reject()
+        })
+    })
+}
+
+function questionSolver(page,question,answer){
+    return new Promise(function(resolve,reject){
+        let questionWillBeClicked = question.click()
+        return questionWillBeClicked.then(function(){
+            let EditorInFocusPromise = waitAndClick('.monaco-editor.no-user-select.vs',page)
+            return EditorInFocusPromise
+        }).then(function(){
+            return waitAndClick('.checkbox-input',page)
+        }).then(function(){
+            return page.waitForSelector('textarea.custominput',page)
+        }).then(function(){
+            return page.type('textarea.custominput',answer,{delay:10})
+        }).then(function(){
+            let ctrlIsPressed = page.keyboard.down('Control')
+            return ctrlIsPressed
+        }).then(function(){
+            let AIsPressed = page.keyboard.press('A',{delay:100})
+            return AIsPressed
+        }).then(function(){
+            let XIsPressed = page.keyboard.press('X',{delay:100})
+            return XIsPressed
+        }).then(function(){
+            let ctrlisUnpressed = page.keyboard.up('Control')
+            return ctrlisUnpressed
+        }).then(function(){
+            let mainEditorInFocus = waitAndClick('.monaco-editor.no-user-select.vs',page)
+            return mainEditorInFocus
+        }).then(function(){
+            let ctrlIsPressed = page.keyboard.down('Control')
+            return ctrlIsPressed 
+        }).then(function(){
+            let AIsPressed = page.keyboard.press('A',{delay:100})
+            return AIsPressed
+        }).then(function(){
+            let VIsPressed = page.keyboard.press('V',{delay:100})
+            return VIsPressed
+        }).then(function(){
+            let ctrlisUnpressed = page.keyboard.up('Control')
+            return ctrlisUnpressed
+        }).then(function(){
+            return page.click('.hr-monaco-submit',{delay:50})
+        }).then(function(){
+            resolve()
+        }).then(function(){
+            reject();
         })
     })
 }
